@@ -1,14 +1,13 @@
 package ru.hogwarts.school.controller;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
-
-import java.util.Collection;
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/student")
@@ -21,56 +20,58 @@ public class StudentController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Student> getStudentInfo(@PathVariable Long id) {
+    public Student getStudentInfo(@PathVariable Long id) {
         Student student = studentService.findStudent(id);
         if (student == null) {
-            return ResponseEntity.notFound().build();
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found");
         }
-        return ResponseEntity.ok(student);
+        return student;
     }
 
     @PostMapping
-    public Student createStudent(@RequestBody Student student) {
-        return studentService.addStudent(student);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Long createStudent(@RequestBody Student student) {
+        Student createdStudent = studentService.addStudent(student);
+        return createdStudent.getId();
     }
 
     @PutMapping
-    public ResponseEntity<Student> editStudent(@RequestBody Student student) {
+    public Student editStudent(@RequestBody Student student) {
         Student foundStudent = studentService.editStudent(student);
         if (foundStudent == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
         }
-        return ResponseEntity.ok(foundStudent);
+        return foundStudent;
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Student>> findStudents(@RequestParam int age) {
+    public Collection<Student> findStudents(@RequestParam(required = false, defaultValue = "0") int age) {
         if (age > 0) {
-            return ResponseEntity.ok(studentService.findByAge(age));
+            return studentService.findByAge(age);
         }
-        return ResponseEntity.ok(Collections.emptyList());
+        return Collections.emptyList();
     }
 
     @GetMapping("/age-range")
-    public ResponseEntity<Collection<Student>> findStudentsByAgeRange(@RequestParam int minAge,@RequestParam int maxAge) {
+    public Collection<Student> findStudentsByAgeRange(@RequestParam int minAge, @RequestParam int maxAge) {
         if (minAge < 0 || minAge > maxAge) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntity.ok(studentService.findByAgeBetween(minAge, maxAge));
+        return studentService.findByAgeBetween(minAge, maxAge);
     }
 
     @GetMapping("/{id}/faculty")
-    public ResponseEntity<Faculty> getFacultyByStudent(@PathVariable Long id) {
+    public Faculty getFacultyByStudent(@PathVariable Long id) {
         Student student = studentService.findStudent(id);
         if (student == null) {
-            return ResponseEntity.notFound().build();
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok(student.getFaculty());
+        return student.getFaculty();
     }
 }
