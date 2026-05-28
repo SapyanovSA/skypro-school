@@ -1,7 +1,5 @@
 package ru.hogwarts.school.model;
 
-import java.util.Arrays;
-import java.util.Objects;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,8 +13,8 @@ public class Avatar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String filePath, mediaType;
+    private String filePath;
+    private String mediaType;
     private long fileSize;
 
     @Lob
@@ -34,34 +32,6 @@ public class Avatar {
         this.mediaType = mediaType;
         this.fileSize = fileSize;
         this.student = student;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Avatar avatar = (Avatar) o;
-        return fileSize == avatar.fileSize && Objects.equals(id, avatar.id) && Objects.equals(filePath, avatar.filePath) && Objects.equals(mediaType, avatar.mediaType) && Arrays.equals(data, avatar.data) && Objects.equals(student, avatar.student);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(id, filePath, mediaType, fileSize, student);
-        result = 31 * result + Arrays.hashCode(data);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Avatar{" +
-                "id=" + id +
-                ", filePath='" + filePath + '\'' +
-                ", mediaType='" + mediaType + '\'' +
-                ", fileSize=" + fileSize +
-                ", student=" + student +
-                '}';
     }
 
     public Long getId() {
