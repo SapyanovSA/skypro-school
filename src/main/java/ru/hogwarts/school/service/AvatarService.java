@@ -16,12 +16,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import ru.hogwarts.school.exception.StudentNotFoundException;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.AvatarRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
 @Service
+@Transactional
 public class AvatarService {
 
     @Value("${avatars.dir.path}")
@@ -35,15 +37,13 @@ public class AvatarService {
         this.studentRepository = studentRepository;
     }
 
-    @Transactional
     public Avatar findAvatar(long studentId) {
         return avatarRepository.findByStudentId(studentId).orElse(null);
     }
 
     public void uploadAvatar(Long studentId, MultipartFile file) throws IOException {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
-
+                .orElseThrow(() -> new StudentNotFoundException("Student with id " + studentId + " not found"));
         Path filePath = Path.of(avatarsDir, studentId + "." + getExtension(file.getOriginalFilename()));
         Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
