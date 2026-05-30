@@ -9,9 +9,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,5 +71,11 @@ public class AvatarService {
     private String getExtension(String fileName) {
         if (fileName == null) return "";
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    public List<Avatar> getAllAvatars(int pageNumber, int pageSize) {
+
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 }
