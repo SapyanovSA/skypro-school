@@ -1,6 +1,7 @@
 package ru.hogwarts.school.service;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,5 +59,14 @@ public class FacultyService {
     public Collection<Faculty> findByNameOrColorIgnoreCase(String search) {
         logger.info("Was invoked method for find faculties by name or color ignore case");
         return facultyRepository.findByNameContainingIgnoreCaseOrColorContainingIgnoreCase(search, search);
+    }
+
+    public String getBigFacultyName() {
+        return facultyRepository.findAll()
+                .stream()
+                .map(Faculty::getName)
+                .filter(n -> n != null)
+                .max(Comparator.comparingInt(String::length))
+                .orElse("Faculty not found");
     }
 }
