@@ -80,13 +80,18 @@ public class StudentController {
         return studentService.getStudentsCount();
     }
 
-    @GetMapping("/average-age")
-    public Double getAverageAge() {
-        return studentService.getAverageAge();
-    }
-
     @GetMapping("/last-five")
     public Collection<Student> getLastFiveStudents() {
         return studentService.getLastFiveStudents();
+    }
+
+    @GetMapping("/names-starting-with-a")
+    public Collection<String> allStudentsThatBeginWithAToUpperCase() {
+        return studentService.allStudentsThatBeginWithAToUpperCase();
+    }
+
+    @GetMapping("/average-age")
+    public Double AVGStudents() {
+        return studentService.AVGStudents();
     }
 }
