@@ -94,4 +94,14 @@ public class StudentController {
     public Double AVGStudents() {
         return studentService.AVGStudents();
     }
+
+    @GetMapping("/students/print-parallel")
+    public void printStudentsParallel() {
+        studentService.printStudentsParallel();
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public void printStudentsSynchronized() {
+        studentService.printStudentsSynchronized();
+    }
 }
